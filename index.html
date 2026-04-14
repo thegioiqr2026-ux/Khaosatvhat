@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Khảo sát Văn hóa An toàn - Vĩnh Tân 2</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eceff1; padding: 20px; }
+        .card { background: white; max-width: 600px; margin: auto; padding: 30px; border-radius: 12px; shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #01579b; text-align: center; margin-bottom: 5px; }
+        .question { margin-top: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .btn { background: #01579b; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        .btn:hover { background: #0277bd; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>KHẢO SÁT VĂN HÓA AN TOÀN</h2>
+    <p style="text-align:center; color:#546e7a;">Nhà máy Nhiệt điện Vĩnh Tân 2</p>
+    
+    <form id="vhatForm">
+        <div class="question">
+            <p>1. Lãnh đạo luôn ưu tiên an toàn hơn tiến độ phát điện?</p>
+            <input type="radio" name="q1" value="1"> 1 (Kém) 
+            <input type="radio" name="q1" value="3"> 3 (Khá) 
+            <input type="radio" name="q1" value="5" checked> 5 (Tốt)
+        </div>
+        <div class="question">
+            <p>2. Bạn tự nguyện báo cáo các sự cố "Suýt chết" (Near-miss)?</p>
+            <input type="radio" name="q2" value="1"> 1 (Không) 
+            <input type="radio" name="q2" value="3"> 3 (Đôi khi) 
+            <input type="radio" name="q2" value="5" checked> 5 (Luôn luôn)
+        </div>
+        <div class="question">
+            <p>3. Các quy trình LOTO/Biện pháp an toàn được thực hiện nghiêm túc?</p>
+            <input type="radio" name="q3" value="1"> 1 (Đối phó) 
+            <input type="radio" name="q3" value="3" checked> 3 (Cơ bản) 
+            <input type="radio" name="q3" value="5"> 5 (Tuyệt đối)
+        </div>
+        <button type="button" class="btn" onclick="sendData()">GỬI KẾT QUẢ & XEM DASHBOARD</button>
+    </form>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyALxXDNbFdXkI7XvHqiSNb1jnKjj0CbYnE",
+        authDomain: "qldd-2025.firebaseapp.com",
+        databaseURL: "https://qldd-2025-default-rtdb.firebaseio.com",
+        projectId: "qldd-2025",
+        storageBucket: "qldd-2025.firebasestorage.app",
+        messagingSenderId: "84684010166",
+        appId: "1:84684010166:web:bd9c3b5ae4227ee2812c17",
+        measurementId: "G-7E5BDTCSEZ"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    function sendData() {
+        const q1 = parseInt(document.querySelector('input[name="q1"]:checked').value);
+        const q2 = parseInt(document.querySelector('input[name="q2"]:checked').value);
+        const q3 = parseInt(document.querySelector('input[name="q3"]:checked').value);
+
+        database.ref('surveys').push({
+            lanhDao: q1,
+            baoCao: q2,
+            tuanThu: q3,
+            timestamp: Date.now()
+        }).then(() => {
+            window.location.href = "dashboard.html";
+        });
+    }
+</script>
+</body>
+</html>
