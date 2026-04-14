@@ -11,30 +11,26 @@
         body { font-family: 'Segoe UI', sans-serif; background: #eceff1; margin: 0; padding: 10px; }
         .card { background: white; max-width: 850px; margin: 10px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #01579b; text-align: center; font-size: 20px; text-transform: uppercase; margin-bottom: 20px; }
-        /* Cố định chiều cao khung biểu đồ để không bị nhảy màn hình */
-        #chart-wrap { position: relative; height: 350px; width: 100%; max-height: 70vh; }
-        #evaluation-box { margin-top: 20px; padding: 15px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; }
-        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; line-height: 1.5; font-size: 14px; }
-        .btn-back { display: block; width: 180px; margin: 25px auto 0; padding: 12px; background: #546e7a; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; }
-        
+        #chart-wrap { position: relative; height: 350px; width: 100%; margin: auto; }
+        #evaluation-box { margin-top: 25px; padding: 20px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; }
+        .eval-title { color: #01579b; font-weight: bold; font-size: 16px; margin-bottom: 10px; display: block; }
+        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; line-height: 1.6; font-size: 14px; }
+        .btn-back { display: block; width: 180px; margin: 25px auto 0; padding: 12px; background: #546e7a; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .btn-back:hover { background: #37474f; transform: scale(1.05); }
         @media (max-width: 480px) { #chart-wrap { height: 300px; } h2 { font-size: 16px; } }
     </style>
 </head>
 <body>
-
 <div class="card">
-    <h2>CHỈ SỐ VĂN HÓA AN TOÀN (5 TRỤC)</h2>
-    <div id="chart-wrap">
-        <canvas id="radarChart"></canvas>
-    </div>
-    
+    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP</h2>
+    <div id="chart-wrap"><canvas id="radarChart"></canvas></div>
     <div id="evaluation-box">
-        <p id="status-text" style="margin:0; font-size:14px;">Đang kết nối Firebase...</p>
+        <span class="eval-title">⚡ PHÂN TÍCH & ĐỀ XUẤT GIẢI PHÁP</span>
+        <p id="status-text" style="margin:0; font-size:14px; color:#37474f;">Đang tải dữ liệu...</p>
         <div id="solution-text" class="solution"></div>
     </div>
     <a href="index.html" class="btn-back">QUAY LẠI KHẢO SÁT</a>
 </div>
-
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyALxXDNbFdXkI7XvHqiSNb1jnKjj0CbYnE",
@@ -46,24 +42,12 @@
         appId: "1:84684010166:web:bd9c3b5ae4227ee2812c17",
         measurementId: "G-7E5BDTCSEZ"
     };
-
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-
-    let myChart = null; // Khởi tạo biến biểu đồ rỗng
-
-    // Hàm vẽ biểu đồ
+    let myChart = null;
     function renderChart(dataPoints) {
         const ctx = document.getElementById('radarChart').getContext('2d');
-        
-        // Nếu biểu đồ đã tồn tại, chỉ cập nhật dữ liệu để tránh chớp nháy
-        if (myChart) {
-            myChart.data.datasets[0].data = dataPoints;
-            myChart.update();
-            return;
-        }
-
-        // Nếu chưa có, tạo mới
+        if (myChart) { myChart.data.datasets[0].data = dataPoints; myChart.update(); return; }
         myChart = new Chart(ctx, {
             type: 'radar',
             data: {
@@ -71,58 +55,38 @@
                 datasets: [{
                     label: 'Điểm trung bình (0-10)',
                     data: dataPoints,
-                    backgroundColor: 'rgba(1, 87, 155, 0.2)',
-                    borderColor: '#01579b',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#01579b'
+                    backgroundColor: 'rgba(1, 87, 155, 0.2)', borderColor: '#01579b', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#01579b'
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { r: { min: 0, max: 10, ticks: { display: false, stepSize: 2 } } }
+                responsive: true, maintainAspectRatio: false,
+                scales: { r: { min: 0, max: 10, ticks: { display: false, stepSize: 2 } } },
+                plugins: { legend: { display: false } }
             }
         });
     }
-
-    // Lắng nghe Firebase
     database.ref('surveys').on('value', (snapshot) => {
         const data = snapshot.val();
-        if (!data) {
-            document.getElementById('status-text').innerText = "Chưa có dữ liệu. Vui lòng thực hiện đánh giá.";
-            renderChart([0, 0, 0, 0, 0]); // Vẽ biểu đồ trống
-            return;
-        }
-
-        let sums = [0, 0, 0, 0, 0], count = 0;
+        if (!data) { document.getElementById('status-text').innerText = "Chưa có dữ liệu."; renderChart([0,0,0,0,0]); return; }
+        let sums = [0,0,0,0,0], count = 0;
         for (let k in data) {
-            // Đảm bảo lấy đúng các câu hỏi q1-q5 từ tệp index.html mới
-            sums[0] += (data[k].q1 || 0);
-            sums[1] += (data[k].q2 || 0);
-            sums[2] += (data[k].q3 || 0);
-            sums[3] += (data[k].q4 || 0);
-            sums[4] += (data[k].q5 || 0);
+            sums[0] += (data[k].q1 || 0); sums[1] += (data[k].q2 || 0); sums[2] += (data[k].q3 || 0); sums[3] += (data[k].q4 || 0); sums[4] += (data[k].q5 || 0);
             count++;
         }
-
-        const avgs = sums.map(s => (s / count).toFixed(1));
+        const avgs = sums.map(s => parseFloat((s/count).toFixed(1)));
         renderChart(avgs);
-
-        // Hiển thị đánh giá
         let minVal = Math.min(...avgs);
-        let minIndex = avgs.indexOf(minVal.toString());
-        const labels = ['Lãnh đạo', 'Báo cáo', 'Tuân thủ', 'Môi trường', 'Đào tạo'];
+        let minIndex = avgs.indexOf(minVal);
+        let labels = ['Lãnh đạo', 'Báo cáo', 'Tuân thủ', 'Môi trường', 'Đào tạo'];
+        document.getElementById('status-text').innerText = `Tổng hợp ${count} phiếu. Thấp nhất: ${labels[minIndex]} (${minVal}/10 điểm).`;
         const solutions = [
-            "Cần tăng cường đối thoại giữa Lãnh đạo và Nhân viên.",
-            "Xây dựng chính sách khen thưởng cho báo cáo sự cố suýt chết.",
-            "Tăng cường kiểm tra quy trình LOTO hiện trường.",
-            "Rà soát hệ thống lọc bụi và tiếng ồn tại các tổ máy.",
-            "Cập nhật nội dung huấn luyện sát với thực tế vận hành."
+            "👉 Đề xuất Ban Giám đốc tăng cường Safety Walk hiện trường để lắng nghe anh em vận hành.",
+            "👉 Áp dụng chính sách 'Khen thưởng Near-miss' và KHÔNG kỷ luật đối với báo cáo tự nguyện.",
+            "👉 Siết chặt kiểm tra LOTO/PTW; xử lý nghiêm các hành vi 'làm tắt' quy trình an toàn.",
+            "👉 Rà soát lại hệ thống bảo ôn đường ống và kiểm soát tiếng ồn, bụi than vượt ngưỡng.",
+            "👉 Số hóa bài giảng bằng video và ứng dụng tương tác để tăng tính thực tế khi huấn luyện."
         ];
-
-        document.getElementById('status-text').innerText = `Dữ liệu từ ${count} phiếu. Thấp nhất: ${labels[minIndex]} (${minVal}/10).`;
-        document.getElementById('solution-text').innerText = "👉 Giải pháp: " + solutions[minIndex];
+        document.getElementById('solution-text').innerText = solutions[minIndex];
     });
 </script>
 </body>
