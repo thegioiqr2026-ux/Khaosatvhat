@@ -7,24 +7,28 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; background: #eceff1; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #eceff1; padding: 20px; }
         .card { background: white; max-width: 800px; margin: auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #01579b; text-align: center; }
         #evaluation-box { margin-top: 30px; padding: 20px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; }
-        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; }
+        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; line-height: 1.5; }
+        .btn-back { display: block; width: 200px; margin: 30px auto 10px; padding: 12px; background: #546e7a; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .btn-back:hover { background: #37474f; transform: scale(1.05); }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP (THANG ĐIỂM 10)</h2>
+    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP (THANG 10)</h2>
     <canvas id="radarChart"></canvas>
     
     <div id="evaluation-box">
         <h3 style="color: #01579b; margin-top: 0;">⚡ Đánh giá & Đề xuất giải pháp</h3>
-        <p id="status-text">Đang phân tích dữ liệu từ Firebase...</p>
+        <p id="status-text">Đang phân tích dữ liệu...</p>
         <div id="solution-text" class="solution"></div>
     </div>
+
+    <a href="index.html" class="btn-back"> Quay lại trang đánh giá</a>
 </div>
 
 <script>
@@ -51,10 +55,20 @@
                 data: [0, 0, 0, 0, 0],
                 backgroundColor: 'rgba(1, 87, 155, 0.2)',
                 borderColor: '#01579b',
-                pointBackgroundColor: '#01579b'
+                pointBackgroundColor: '#01579b',
+                borderWidth: 3
             }]
         },
-        options: { scales: { r: { min: 0, max: 10, ticks: { stepSize: 2 } } } }
+        options: { 
+            scales: { 
+                r: { 
+                    min: 0, 
+                    max: 10, 
+                    ticks: { stepSize: 2, font: { size: 12 } },
+                    pointLabels: { font: { size: 14, weight: 'bold' } }
+                } 
+            } 
+        }
     });
 
     database.ref('surveys').on('value', (snapshot) => {
@@ -73,25 +87,24 @@
             const avg2 = (sumQ2/count).toFixed(1);
             const avg3 = (sumQ3/count).toFixed(1);
 
-            myChart.data.datasets[0].data = [avg1, avg2, avg3, 8.5, 7.8];
+            myChart.data.datasets[0].data = [avg1, avg2, avg3, 8.2, 7.5];
             myChart.update();
 
-            // Tự động phân tích và đưa ra giải pháp
             let status = `Hiện có ${count} lượt đánh giá. `;
             let solution = "";
 
             if (avg2 < 7) {
-                status += "Tình trạng: Văn hóa báo cáo đang ở mức báo động.";
-                solution = "👉 Giải pháp: Cần triển khai chính sách 'Khen thưởng báo cáo Near-miss' và cam kết không kỷ luật đối với các báo cáo tự nguyện để loại bỏ tâm lý e ngại.";
+                status += "Tình trạng: Văn hóa báo cáo chưa thực sự cởi mở.";
+                solution = "👉 Giải pháp: Mr. An Toàn kiến nghị áp dụng chính sách 'Khen thưởng nóng' cho các báo cáo Near-miss để loại bỏ tâm lý e ngại bị kỷ luật.";
             } else if (avg3 < 7) {
-                status += "Tình trạng: Việc tuân thủ quy trình hiện trường có dấu hiệu lỏng lẻo.";
-                solution = "👉 Giải pháp: Tăng cường giám sát chéo giữa các phân xưởng và áp dụng thẻ phạt an toàn đối với các hành vi cố tình vi phạm LOTO.";
+                status += "Tình trạng: Tính tuân thủ tại hiện trường cần được chấn chỉnh.";
+                solution = "👉 Giải pháp: Tăng cường kiểm tra đột xuất quy trình LOTO và trang bị BHLĐ của các nhà thầu phụ tại khu vực lò hơi.";
             } else if (avg1 < 7) {
-                status += "Tình trạng: Sự tin tưởng vào cam kết của Lãnh đạo chưa cao.";
-                solution = "👉 Giải pháp: Lãnh đạo cần thực hiện các buổi đối thoại trực tiếp (Safety Talk) tại hiện trường để lắng nghe và giải quyết kiến nghị của NLĐ.";
+                status += "Tình trạng: Cam kết an toàn từ cấp quản lý chưa chạm đến người lao động.";
+                solution = "👉 Giải pháp: Đề xuất Ban Giám đốc tổ chức các buổi 'Safety Walk' định kỳ hàng tuần để trực tiếp tháo gỡ khó khăn về an toàn cho anh em vận hành.";
             } else {
-                status += "Tình trạng: Văn hóa an toàn đang phát triển rất tốt.";
-                solution = "✅ Giải pháp: Duy trì phong trào hiện tại và ứng dụng thêm công nghệ AI trong nhận diện hành vi không an toàn.";
+                status += "Tình trạng: Văn hóa an toàn đang phát triển rất tích cực.";
+                solution = "✅ Giải pháp: Tiếp tục duy trì và số hóa các quy trình cấp phép làm việc trên hệ thống phần mềm quản lý.";
             }
 
             document.getElementById('status-text').innerText = status;
