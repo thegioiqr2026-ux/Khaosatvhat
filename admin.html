@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Quản trị Dữ liệu Vĩnh Tân 2</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #cfd8dc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .admin-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; width: 90%; }
+        h2 { color: #b71c1c; margin-bottom: 10px; }
+        p { color: #546e7a; font-size: 14px; margin-bottom: 20px; }
+        input[type="password"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; }
+        .btn-delete { background: #b71c1c; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        .btn-delete:hover { background: #ef5350; transform: scale(1.02); }
+        .btn-dashboard { display: inline-block; margin-top: 20px; color: #01579b; text-decoration: none; font-size: 14px; font-weight: bold; }
+        #message { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="admin-card">
+    <h2>QUẢN TRỊ DỮ LIỆU</h2>
+    <p>Nhập mật khẩu để xóa toàn bộ khảo sát cũ và bắt đầu phiên huấn luyện mới.</p>
+    
+    <input type="password" id="adminPass" placeholder="Mật khẩu xác nhận">
+    
+    <button class="btn-delete" onclick="clearData()">XÓA TOÀN BỘ DỮ LIỆU</button>
+    
+    <div id="message"></div>
+    
+    <a href="dashboard.html" class="btn-dashboard">← Quay lại Dashboard</a>
+</div>
+
+<script>
+    // Firebase Config của bạn
+    const firebaseConfig = {
+        apiKey: "AIzaSyALxXDNbFdXkI7XvHqiSNb1jnKjj0CbYnE",
+        authDomain: "qldd-2025.firebaseapp.com",
+        databaseURL: "https://qldd-2025-default-rtdb.firebaseio.com",
+        projectId: "qldd-2025",
+        storageBucket: "qldd-2025.firebasestorage.app",
+        messagingSenderId: "84684010166",
+        appId: "1:84684010166:web:bd9c3b5ae4227ee2812c17",
+        measurementId: "G-7E5BDTCSEZ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    function clearData() {
+        const pass = document.getElementById('adminPass').value;
+        const msg = document.getElementById('message');
+
+        // Đặt mật khẩu đơn giản là "VinhTan2" hoặc số điện thoại của bạn
+        if (pass === "123456") { 
+            if (confirm("CẢNH BÁO: Toàn bộ dữ liệu khảo sát sẽ bị xóa vĩnh viễn để mở phiên mới. Bạn có chắc chắn không?")) {
+                database.ref('surveys').remove()
+                .then(() => {
+                    msg.style.color = "green";
+                    msg.innerText = "Thành công! Dữ liệu đã được làm sạch.";
+                    document.getElementById('adminPass').value = "";
+                })
+                .catch((error) => {
+                    msg.style.color = "red";
+                    msg.innerText = "Lỗi: " + error.message;
+                });
+            }
+        } else {
+            msg.style.color = "red";
+            msg.innerText = "Mật khẩu không chính xác!";
+        }
+    }
+</script>
+</body>
+</html>
