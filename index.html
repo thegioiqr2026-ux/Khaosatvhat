@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khảo sát Văn hóa An toàn - Vĩnh Tân 2</title>
+    <title>Khảo sát VHAT 5 Trục - Vĩnh Tân 2</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #eceff1; margin: 0; padding: 10px; color: #333; }
-        .card { background: white; max-width: 600px; margin: 20px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: #eceff1; margin: 0; padding: 10px; }
+        .card { background: white; max-width: 600px; margin: 20px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #01579b; text-align: center; font-size: 22px; margin-bottom: 5px; }
         .sub-title { text-align: center; color: #546e7a; margin-bottom: 20px; font-size: 14px; }
         .question { margin-top: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .question p { font-weight: bold; margin-bottom: 10px; font-size: 15px; line-height: 1.4; }
-        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; background: #f9f9f9; appearance: none; }
-        .btn { background: #01579b; color: white; border: none; padding: 16px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 18px; margin-top: 25px; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: #0277bd; }
+        .question p { font-weight: bold; margin-bottom: 12px; font-size: 15px; line-height: 1.5; color: #37474f; }
         
-        /* Mobile Optimization */
+        /* Select styling */
+        select { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #01579b; font-size: 16px; background: #fff; cursor: pointer; outline: none; }
+        option { padding: 10px; }
+
+        .btn { background: #01579b; color: white; border: none; padding: 16px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 18px; margin-top: 30px; font-weight: bold; transition: 0.3s; }
+        .btn:hover { background: #0277bd; transform: translateY(-2px); }
+
         @media (max-width: 480px) {
-            .card { padding: 15px; margin: 5px auto; border-radius: 8px; }
-            h2 { font-size: 18px; }
-            .question p { font-size: 14px; }
-            select { font-size: 15px; padding: 10px; }
+            .card { padding: 15px; margin: 10px auto; }
+            h2 { font-size: 19px; }
+            select { font-size: 14px; }
         }
     </style>
 </head>
@@ -30,20 +32,65 @@
 
 <div class="card">
     <h2>KHẢO SÁT VĂN HÓA AN TOÀN</h2>
-    <p class="sub-title">Nhà máy Nhiệt điện Vĩnh Tân 2 (Mô hình 5 trục)</p>
+    <p class="sub-title">Nhà máy Nhiệt điện Vĩnh Tân 2 (Thang điểm 10 - 5 mức độ)</p>
     
     <form id="vhatForm">
-        <div class="question"><p>1. Lãnh đạo ưu tiên an toàn hơn tiến độ?</p>
-            <select name="q1"><option value="2">2 (Rất kém)</option><option value="4">4 (Trung bình)</option><option value="6">6 (Khá)</option><option value="8">8 (Tốt)</option><option value="10" selected>10 (Rất tốt)</option></select></div>
-        <div class="question"><p>2. Bạn sẵn sàng báo cáo sự cố "Suýt chết"?</p>
-            <select name="q2"><option value="2">2 (Không)</option><option value="6">6 (Đôi khi)</option><option value="10" selected>10 (Sẵn sàng)</option></select></div>
-        <div class="question"><p>3. Bạn thực hiện nghiêm quy trình LOTO/PTW?</p>
-            <select name="q3"><option value="2">2 (Đối phó)</option><option value="6">6 (Cơ bản)</option><option value="10" selected>10 (Tuyệt đối)</option></select></div>
-        <div class="question"><p>4. Môi trường Bụi/Ồn/Nhiệt được kiểm soát tốt?</p>
-            <select name="q4"><option value="2">2 (Tệ)</option><option value="6">6 (Khá)</option><option value="10" selected>10 (Rất tốt)</option></select></div>
-        <div class="question"><p>5. Nội dung huấn luyện sát với thực tế?</p>
-            <select name="q5"><option value="2">2 (Lý thuyết)</option><option value="6">6 (Bình thường)</option><option value="10" selected>10 (Rất thực tế)</option></select></div>
-        <button type="button" class="btn" onclick="sendData()">GỬI KẾT QUẢ</button>
+        <div class="question">
+            <p>1. Cam kết Lãnh đạo: Lãnh đạo ưu tiên an toàn hơn tiến độ phát điện?</p>
+            <select name="q1">
+                <option value="2">1-2: Rất kém (Coi trọng tiến độ hơn an toàn)</option>
+                <option value="4">3-4: Trung bình (Chỉ an toàn khi có đoàn kiểm tra)</option>
+                <option value="6">5-6: Khá (Có quan tâm nhưng chưa sâu sát)</option>
+                <option value="8">7-8: Tốt (Ưu tiên an toàn trong hầu hết công việc)</option>
+                <option value="10" selected>9-10: Rất tốt (An toàn là giá trị cốt lõi nhất)</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <p>2. Văn hóa Báo cáo: Bạn sẵn sàng báo cáo sự cố "Suýt chết" (Near-miss)?</p>
+            <select name="q2">
+                <option value="2">1-2: Rất kém (Sợ bị kỷ luật nên che giấu)</option>
+                <option value="4">3-4: Trung bình (Chỉ báo cáo khi không thể giấu)</option>
+                <option value="6">5-6: Khá (Có báo cáo nhưng chưa đầy đủ)</option>
+                <option value="8">7-8: Tốt (Tự giác báo cáo để rút kinh nghiệm)</option>
+                <option value="10" selected>9-10: Rất tốt (Luôn chủ động báo cáo mọi nguy cơ)</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <p>3. Tính Tuân thủ: Bạn thực hiện nghiêm quy trình LOTO/PTW?</p>
+            <select name="q3">
+                <option value="2">1-2: Rất kém (Làm tắt, bỏ qua quy trình)</option>
+                <option value="4">3-4: Trung bình (Chỉ tuân thủ khi có giám sát)</option>
+                <option value="6">5-6: Khá (Đôi khi còn chủ quan sai sót)</option>
+                <option value="8">7-8: Tốt (Tuân thủ nghiêm túc quy trình)</option>
+                <option value="10" selected>9-10: Rất tốt (Luôn tuân thủ tuyệt đối và nhắc nhở đồng nghiệp)</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <p>4. Môi trường: Các yếu tố Bụi/Ồn/Nhiệt được kiểm soát tốt?</p>
+            <select name="q4">
+                <option value="2">1-2: Rất tệ (Ô nhiễm nghiêm trọng, PPE thiếu)</option>
+                <option value="4">3-4: Trung bình (Còn bụi và ồn nhiều ở gian máy)</option>
+                <option value="6">5-6: Khá (Đã có cải thiện môi trường làm việc)</option>
+                <option value="8">7-8: Tốt (Môi trường sạch sẽ, PPE đầy đủ)</option>
+                <option value="10" selected>9-10: Rất tốt (Môi trường an toàn, thiết bị kiểm soát hiện đại)</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <p>5. Đào tạo: Nội dung huấn luyện sát với thực tế hiện trường?</p>
+            <select name="q5">
+                <option value="2">1-2: Rất tệ (Lý thuyết suông, buồn ngủ)</option>
+                <option value="4">3-4: Trung bình (Nội dung cũ, ít cập nhật)</option>
+                <option value="6">5-6: Khá (Có ích nhưng chưa sinh động)</option>
+                <option value="8">7-8: Tốt (Hữu ích, dễ hiểu, ứng dụng được ngay)</option>
+                <option value="10" selected>9-10: Rất tốt (Rất thực tế, sinh động, dùng công nghệ cao)</option>
+            </select>
+        </div>
+
+        <button type="button" class="btn" onclick="sendData()">GỬI ĐÁNH GIÁ</button>
     </form>
 </div>
 
