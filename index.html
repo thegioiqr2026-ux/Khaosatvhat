@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khảo sát Văn hóa An toàn - Vĩnh Tân 2</title>
+    <title>Khảo sát Văn hóa An toàn 5 Trục - Vĩnh Tân 2</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eceff1; padding: 20px; color: #333; }
         .card { background: white; max-width: 600px; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #01579b; text-align: center; margin-bottom: 5px; }
-        .question { margin-top: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .question p { font-weight: bold; margin-bottom: 10px; }
-        select { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
-        .btn { background: #01579b; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 18px; margin-top: 30px; font-weight: bold; transition: 0.3s; }
+        .question { margin-top: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .question p { font-weight: bold; margin-bottom: 8px; font-size: 15px; }
+        select { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 15px; background: #fff; }
+        .btn { background: #01579b; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 18px; margin-top: 25px; font-weight: bold; transition: 0.3s; }
         .btn:hover { background: #0277bd; transform: translateY(-2px); }
     </style>
 </head>
@@ -21,37 +21,37 @@
 
 <div class="card">
     <h2>KHẢO SÁT VĂN HÓA AN TOÀN</h2>
-    <p style="text-align:center; color:#546e7a;">Nhà máy Nhiệt điện Vĩnh Tân 2</p>
+    <p style="text-align:center; color:#546e7a;">Nhà máy Nhiệt điện Vĩnh Tân 2 (Mô hình 5 trục)</p>
     
     <form id="vhatForm">
         <div class="question">
-            <p>1. Lãnh đạo luôn ưu tiên an toàn hơn tiến độ phát điện?</p>
+            <p>1. Cam kết Lãnh đạo: Lãnh đạo ưu tiên an toàn hơn tiến độ?</p>
             <select name="q1">
-                <option value="2">2 (Rất kém)</option>
-                <option value="4">4 (Trung bình)</option>
-                <option value="6">6 (Khá)</option>
-                <option value="8">8 (Tốt)</option>
-                <option value="10" selected>10 (Rất tốt)</option>
+                <option value="2">2 (Rất kém)</option><option value="4">4 (Trung bình)</option><option value="6">6 (Khá)</option><option value="8">8 (Tốt)</option><option value="10" selected>10 (Rất tốt)</option>
             </select>
         </div>
         <div class="question">
-            <p>2. Bạn tự nguyện báo cáo các sự cố "Suýt chết" (Near-miss)?</p>
+            <p>2. Văn hóa Báo cáo: Bạn sẵn sàng báo cáo sự cố "Suýt chết"?</p>
             <select name="q2">
-                <option value="2">2 (Không bao giờ)</option>
-                <option value="4">4 (Hiếm khi)</option>
-                <option value="6">6 (Đôi khi)</option>
-                <option value="8">8 (Thường xuyên)</option>
-                <option value="10" selected>10 (Luôn luôn)</option>
+                <option value="2">2 (Không)</option><option value="4">4 (Hiếm khi)</option><option value="6">6 (Đôi khi)</option><option value="8">8 (Thường xuyên)</option><option value="10" selected>10 (Luôn luôn)</option>
             </select>
         </div>
         <div class="question">
-            <p>3. Các quy trình LOTO/Biện pháp an toàn được thực hiện nghiêm túc?</p>
+            <p>3. Tính Tuân thủ: Bạn thực hiện nghiêm quy trình LOTO/PTW?</p>
             <select name="q3">
-                <option value="2">2 (Chỉ làm đối phó)</option>
-                <option value="4">4 (Làm khi có giám sát)</option>
-                <option value="6">6 (Cơ bản tuân thủ)</option>
-                <option value="8">8 (Nghiêm túc)</option>
-                <option value="10" selected>10 (Tuyệt đối nghiêm túc)</option>
+                <option value="2">2 (Đối phó)</option><option value="4">4 (Khi giám sát)</option><option value="6">6 (Cơ bản)</option><option value="8">8 (Nghiêm túc)</option><option value="10" selected>10 (Tuyệt đối)</option>
+            </select>
+        </div>
+        <div class="question">
+            <p>4. Môi trường: Các yếu tố Bụi/Ồn/Nhiệt được kiểm soát tốt?</p>
+            <select name="q4">
+                <option value="2">2 (Rất tệ)</option><option value="4">4 (Tạm được)</option><option value="6">6 (Khá)</option><option value="8">8 (Tốt)</option><option value="10" selected>10 (Rất tốt)</option>
+            </select>
+        </div>
+        <div class="question">
+            <p>5. Đào tạo: Nội dung huấn luyện sát với thực tế hiện trường?</p>
+            <select name="q5">
+                <option value="2">2 (Vô bổ)</option><option value="4">4 (Lý thuyết suông)</option><option value="6">6 (Bình thường)</option><option value="8">8 (Hữu ích)</option><option value="10" selected>10 (Rất thực tế)</option>
             </select>
         </div>
         <button type="button" class="btn" onclick="sendData()">GỬI KẾT QUẢ & XEM DASHBOARD</button>
@@ -73,18 +73,15 @@
     const database = firebase.database();
 
     function sendData() {
-        const q1 = parseInt(document.getElementsByName("q1")[0].value);
-        const q2 = parseInt(document.getElementsByName("q2")[0].value);
-        const q3 = parseInt(document.getElementsByName("q3")[0].value);
-
-        database.ref('surveys').push({
-            lanhDao: q1,
-            baoCao: q2,
-            tuanThu: q3,
+        const data = {
+            q1: parseInt(document.getElementsByName("q1")[0].value),
+            q2: parseInt(document.getElementsByName("q2")[0].value),
+            q3: parseInt(document.getElementsByName("q3")[0].value),
+            q4: parseInt(document.getElementsByName("q4")[0].value),
+            q5: parseInt(document.getElementsByName("q5")[0].value),
             timestamp: Date.now()
-        }).then(() => {
-            window.location.href = "dashboard.html";
-        });
+        };
+        database.ref('surveys').push(data).then(() => { window.location.href = "dashboard.html"; });
     }
 </script>
 </body>
