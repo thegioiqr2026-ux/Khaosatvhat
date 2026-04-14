@@ -9,30 +9,34 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #eceff1; margin: 0; padding: 10px; }
-        .card { background: white; max-width: 800px; margin: 10px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #01579b; text-align: center; font-size: 20px; margin-bottom: 15px; }
-        #chart-wrap { position: relative; height: 350px; width: 100%; margin-bottom: 20px; }
-        #evaluation-box { padding: 15px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; font-size: 14px; }
-        .solution { color: #d32f2f; font-weight: bold; margin-top: 8px; display: block; }
-        .btn-back { display: block; width: 160px; margin: 20px auto 0; padding: 10px; background: #546e7a; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; }
+        .card { background: white; max-width: 850px; margin: 10px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #01579b; text-align: center; font-size: 20px; margin-bottom: 20px; text-transform: uppercase; }
+        #chart-wrap { position: relative; height: 350px; width: 100%; margin: auto; }
+        #evaluation-box { margin-top: 30px; padding: 20px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; }
+        .eval-title { color: #01579b; font-weight: bold; font-size: 16px; margin-bottom: 10px; display: block; }
+        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; line-height: 1.6; font-size: 14px; }
+        .btn-back { display: block; width: 160px; margin: 25px auto 0; padding: 12px; background: #546e7a; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; }
         
         @media (max-width: 480px) {
             #chart-wrap { height: 300px; }
             h2 { font-size: 16px; }
-            #evaluation-box { font-size: 13px; }
+            .card { padding: 15px; }
         }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>CHỈ SỐ VĂN HÓA AN TOÀN (5 TRỤC)</h2>
+    <h2>DASHBOARD VĂN HÓA AN TOÀN TỔNG HỢP</h2>
     <div id="chart-wrap"><canvas id="radarChart"></canvas></div>
+    
     <div id="evaluation-box">
-        <p id="status-text" style="margin:0;">Đang kết nối dữ liệu...</p>
-        <span id="solution-text" class="solution"></span>
+        <span class="eval-title">⚡ PHÂN TÍCH & ĐỀ XUẤT GIẢI PHÁP</span>
+        <p id="status-text" style="margin:0; font-size:14px; color:#37474f;">Đang tải dữ liệu thực tế...</p>
+        <div id="solution-text" class="solution"></div>
     </div>
-    <a href="index.html" class="btn-back">Quay lại khảo sát</a>
+    
+    <a href="index.html" class="btn-back">QUAY LẠI KHẢO SÁT</a>
 </div>
 
 <script>
@@ -57,24 +61,38 @@
             datasets: [{
                 label: 'Điểm trung bình (0-10)',
                 data: [0,0,0,0,0],
-                backgroundColor: 'rgba(1, 87, 155, 0.2)', borderColor: '#01579b', borderWidth: 2, pointRadius: 3
+                backgroundColor: 'rgba(1, 87, 155, 0.2)', 
+                borderColor: '#01579b', 
+                borderWidth: 3,
+                pointRadius: 4,
+                pointBackgroundColor: '#01579b'
             }]
         },
         options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: { r: { min: 0, max: 10, ticks: { display: false, stepSize: 2 } } },
-            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { 
+                r: { 
+                    min: 0, 
+                    max: 10, 
+                    ticks: { stepSize: 2, font: { size: 11 } },
+                    pointLabels: { font: { size: 13, weight: 'bold' } }
+                } 
+            },
+            plugins: { legend: { display: false } }
         }
     });
 
     database.ref('surveys').on('value', (snapshot) => {
         const data = snapshot.val();
-        if (!data) { document.getElementById('status-text').innerText = "Chưa có dữ liệu khảo sát."; return; }
+        if (!data) return;
+        
         let sums = [0,0,0,0,0], count = 0;
         for (let k in data) {
             sums[0]+=data[k].q1; sums[1]+=data[k].q2; sums[2]+=data[k].q3; sums[3]+=data[k].q4; sums[4]+=data[k].q5;
             count++;
         }
+        
         const avgs = sums.map(s => (s/count).toFixed(1));
         myChart.data.datasets[0].data = avgs;
         myChart.update();
@@ -82,9 +100,17 @@
         let minVal = Math.min(...avgs);
         let minIndex = avgs.indexOf(minVal.toString());
         let labels = ['Lãnh đạo', 'Báo cáo', 'Tuân thủ', 'Môi trường', 'Đào tạo'];
-        document.getElementById('status-text').innerText = `Tổng số: ${count} phiếu. Thấp nhất: ${labels[minIndex]} (${minVal}/10).`;
-        const solutions = ["Cần Safety Walk thực tế hơn.","Khuyến khích báo cáo Near-miss.","Siết chặt quy trình LOTO.","Kiểm soát bụi/ồn gian máy.","Cải tiến bài giảng sát thực tế."];
-        document.getElementById('solution-text').innerText = "👉 Giải pháp: " + solutions[minIndex];
+        
+        document.getElementById('status-text').innerText = `Tổng hợp dữ liệu từ ${count} lượt khảo sát. \nĐiểm yếu nhất hiện nay là: ${labels[minIndex]} (${minVal}/10 điểm).`;
+        
+        const solutions = [
+            "👉 Lãnh đạo cần thường xuyên tham gia Safety Walk tại hiện trường để tháo gỡ khó khăn trực tiếp cho người lao động.",
+            "👉 Cần ban hành chính sách 'Khen thưởng báo cáo Near-miss' và cam kết KHÔNG kỷ luật đối với các báo cáo tự nguyện.",
+            "👉 Tăng cường kiểm tra đột xuất quy trình LOTO và gắn thẻ an toàn; xử lý nghiêm các hành vi cố tình vi phạm quy trình.",
+            "👉 Đầu tư nâng cấp hệ thống lọc bụi tĩnh điện và bảo trì định kỳ các khu vực phát sinh tiếng ồn lớn tại gian máy.",
+            "👉 Cải tiến nội dung huấn luyện bằng video thực tế và các ứng dụng tương tác số để công nhân dễ tiếp thu kiến thức."
+        ];
+        document.getElementById('solution-text').innerText = solutions[minIndex];
     });
 </script>
 </body>
