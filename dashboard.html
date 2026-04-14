@@ -2,33 +2,31 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Văn hóa An toàn - Vĩnh Tân 2</title>
+    <title>Dashboard VHAT 5 Trục - Vĩnh Tân 2</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #eceff1; padding: 20px; }
-        .card { background: white; max-width: 800px; margin: auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .card { background: white; max-width: 850px; margin: auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #01579b; text-align: center; }
-        #evaluation-box { margin-top: 30px; padding: 20px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; }
-        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; line-height: 1.5; }
-        .btn-back { display: block; width: 200px; margin: 30px auto 10px; padding: 12px; background: #546e7a; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
-        .btn-back:hover { background: #37474f; transform: scale(1.05); }
+        #evaluation-box { margin-top: 25px; padding: 20px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; }
+        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; white-space: pre-wrap; }
+        .btn-back { display: block; width: 180px; margin: 25px auto 0; padding: 10px; background: #546e7a; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP (THANG 10)</h2>
+    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP (5 TRỤC - THANG 10)</h2>
     <canvas id="radarChart"></canvas>
     
     <div id="evaluation-box">
-        <h3 style="color: #01579b; margin-top: 0;">⚡ Đánh giá & Đề xuất giải pháp</h3>
-        <p id="status-text">Đang phân tích dữ liệu...</p>
+        <h3 style="color: #01579b; margin-top: 0;">⚡ Phân tích & Giải pháp</h3>
+        <p id="status-text">Đang tổng hợp dữ liệu...</p>
         <div id="solution-text" class="solution"></div>
     </div>
-
-    <a href="index.html" class="btn-back"> Quay lại trang đánh giá</a>
+    <a href="index.html" class="btn-back">Quay lại Khảo sát</a>
 </div>
 
 <script>
@@ -49,66 +47,40 @@
     let myChart = new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: ['Lãnh đạo', 'Văn hóa Báo cáo', 'Tính Tuân thủ', 'Môi trường', 'Đào tạo'],
+            labels: ['Lãnh đạo', 'Báo cáo', 'Tuân thủ', 'Môi trường', 'Đào tạo'],
             datasets: [{
-                label: 'Điểm trung bình toàn nhà máy',
+                label: 'Điểm trung bình thực tế',
                 data: [0, 0, 0, 0, 0],
-                backgroundColor: 'rgba(1, 87, 155, 0.2)',
-                borderColor: '#01579b',
-                pointBackgroundColor: '#01579b',
-                borderWidth: 3
+                backgroundColor: 'rgba(1, 87, 155, 0.2)', borderColor: '#01579b', borderWidth: 3
             }]
         },
-        options: { 
-            scales: { 
-                r: { 
-                    min: 0, 
-                    max: 10, 
-                    ticks: { stepSize: 2, font: { size: 12 } },
-                    pointLabels: { font: { size: 14, weight: 'bold' } }
-                } 
-            } 
-        }
+        options: { scales: { r: { min: 0, max: 10, ticks: { stepSize: 2 } } } }
     });
 
     database.ref('surveys').on('value', (snapshot) => {
         const data = snapshot.val();
-        let sumQ1 = 0, sumQ2 = 0, sumQ3 = 0, count = 0;
-        
-        for (let key in data) {
-            sumQ1 += data[key].lanhDao;
-            sumQ2 += data[key].baoCao;
-            sumQ3 += data[key].tuanThu;
+        let sums = [0,0,0,0,0], count = 0;
+        for (let k in data) {
+            sums[0]+=data[k].q1; sums[1]+=data[k].q2; sums[2]+=data[k].q3; sums[3]+=data[k].q4; sums[4]+=data[k].q5;
             count++;
         }
-
         if (count > 0) {
-            const avg1 = (sumQ1/count).toFixed(1);
-            const avg2 = (sumQ2/count).toFixed(1);
-            const avg3 = (sumQ3/count).toFixed(1);
-
-            myChart.data.datasets[0].data = [avg1, avg2, avg3, 8.2, 7.5];
+            const avgs = sums.map(s => (s/count).toFixed(1));
+            myChart.data.datasets[0].data = avgs;
             myChart.update();
 
-            let status = `Hiện có ${count} lượt đánh giá. `;
-            let solution = "";
-
-            if (avg2 < 7) {
-                status += "Tình trạng: Văn hóa báo cáo chưa thực sự cởi mở.";
-                solution = "👉 Giải pháp: Mr. An Toàn kiến nghị áp dụng chính sách 'Khen thưởng nóng' cho các báo cáo Near-miss để loại bỏ tâm lý e ngại bị kỷ luật.";
-            } else if (avg3 < 7) {
-                status += "Tình trạng: Tính tuân thủ tại hiện trường cần được chấn chỉnh.";
-                solution = "👉 Giải pháp: Tăng cường kiểm tra đột xuất quy trình LOTO và trang bị BHLĐ của các nhà thầu phụ tại khu vực lò hơi.";
-            } else if (avg1 < 7) {
-                status += "Tình trạng: Cam kết an toàn từ cấp quản lý chưa chạm đến người lao động.";
-                solution = "👉 Giải pháp: Đề xuất Ban Giám đốc tổ chức các buổi 'Safety Walk' định kỳ hàng tuần để trực tiếp tháo gỡ khó khăn về an toàn cho anh em vận hành.";
-            } else {
-                status += "Tình trạng: Văn hóa an toàn đang phát triển rất tích cực.";
-                solution = "✅ Giải pháp: Tiếp tục duy trì và số hóa các quy trình cấp phép làm việc trên hệ thống phần mềm quản lý.";
-            }
-
+            let minVal = Math.min(...avgs);
+            let minIndex = avgs.indexOf(minVal.toString());
+            let status = `Tổng hợp ${count} lượt khảo sát. Điểm thấp nhất tại trục: ${myChart.data.labels[minIndex]} (${minVal}/10).`;
+            let solutions = [
+                "👉 Giải pháp: Lãnh đạo cần thực hiện Safety Walk định kỳ để thu hẹp khoảng cách với hiện trường.",
+                "👉 Giải pháp: Áp dụng chính sách 'Không đổ lỗi' để khuyến khích báo cáo sự cố suýt chết.",
+                "👉 Giải pháp: Siết chặt quy trình LOTO và tăng cường giám sát hiện trường đột xuất.",
+                "👉 Giải pháp: Rà soát lại hệ thống lọc bụi tĩnh điện và bảo ôn đường ống lò hơi.",
+                "👉 Giải pháp: Số hóa nội dung huấn luyện, tăng tính tương tác qua mã QR và mô phỏng thực tế."
+            ];
             document.getElementById('status-text').innerText = status;
-            document.getElementById('solution-text').innerText = solution;
+            document.getElementById('solution-text').innerText = solutions[minIndex];
         }
     });
 </script>
