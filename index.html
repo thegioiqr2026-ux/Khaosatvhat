@@ -3,61 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khảo sát VHAT 5 Trục - Vĩnh Tân 2</title>
+    <title>Admin - Vĩnh Tân 2</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #eceff1; margin: 0; padding: 10px; }
-        .card { background: white; max-width: 600px; margin: 20px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #01579b; text-align: center; font-size: 22px; margin-bottom: 5px; text-transform: uppercase; }
-        .sub-title { text-align: center; color: #546e7a; margin-bottom: 20px; font-size: 14px; }
-        .question { margin-top: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .question p { font-weight: bold; margin-bottom: 12px; font-size: 15px; color: #37474f; }
-        select { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #01579b; font-size: 16px; background: #fff; outline: none; }
-        .btn { background: #01579b; color: white; border: none; padding: 16px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 18px; margin-top: 30px; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: #0277bd; transform: translateY(-2px); }
-        @media (max-width: 480px) { .card { padding: 15px; } h2 { font-size: 19px; } select { font-size: 15px; } }
+        body { font-family: sans-serif; background: #cfd8dc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .admin-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; width: 90%; }
+        input[type="password"] { width: 100%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; text-align: center; }
+        .btn-delete { background: #b71c1c; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #message { margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
-<div class="card">
-    <h2>KHẢO SÁT VĂN HÓA AN TOÀN</h2>
-    <p class="sub-title">Nhà máy Nhiệt điện Vĩnh Tân 2 (Thang 10 - 5 mức độ)</p>
-    <form id="vhatForm">
-        <div class="question"><p>1. Cam kết Lãnh đạo: Lãnh đạo ưu tiên an toàn hơn tiến độ?</p>
-            <select name="q1">
-                <option value="2">1-2: Rất kém (Coi trọng tiến độ hơn)</option>
-                <option value="4">3-4: Trung bình (Làm đối phó)</option>
-                <option value="6">5-6: Khá (Có quan tâm nhưng chưa sâu sát)</option>
-                <option value="8">7-8: Tốt (Ưu tiên an toàn)</option>
-                <option value="10" selected>9-10: Rất tốt (Giá trị cốt lõi)</option>
-            </select></div>
-        <div class="question"><p>2. Văn hóa Báo cáo: Bạn sẵn sàng báo cáo sự cố "Suýt chết"?</p>
-            <select name="q2">
-                <option value="2">1-2: Rất kém (Sợ bị kỷ luật)</option>
-                <option value="6">5-6: Khá (Có báo cáo nhưng chưa đủ)</option>
-                <option value="10" selected>9-10: Rất tốt (Luôn chủ động)</option>
-            </select></div>
-        <div class="question"><p>3. Tính Tuân thủ: Bạn thực hiện nghiêm quy trình LOTO/PTW?</p>
-            <select name="q3">
-                <option value="2">1-2: Rất kém (Làm tắt quy trình)</option>
-                <option value="6">5-6: Khá (Đôi khi còn chủ quan)</option>
-                <option value="10" selected>9-10: Rất tốt (Tuân thủ tuyệt đối)</option>
-            </select></div>
-        <div class="question"><p>4. Môi trường: Các yếu tố Bụi/Ồn/Nhiệt được kiểm soát tốt?</p>
-            <select name="q4">
-                <option value="2">1-2: Rất tệ (Ô nhiễm, thiếu PPE)</option>
-                <option value="6">5-6: Khá (Đã có cải thiện)</option>
-                <option value="10" selected>9-10: Rất tốt (Môi trường sạch sẽ)</option>
-            </select></div>
-        <div class="question"><p>5. Đào tạo: Nội dung huấn luyện sát với thực tế hiện trường?</p>
-            <select name="q5">
-                <option value="2">1-2: Rất tệ (Lý thuyết suông)</option>
-                <option value="6">5-6: Khá (Có ích nhưng chưa sinh động)</option>
-                <option value="10" selected>9-10: Rất tốt (Rất thực tế, sinh động)</option>
-            </select></div>
-        <button type="button" class="btn" onclick="sendData()">GỬI ĐÁNH GIÁ</button>
-    </form>
+<div class="admin-card">
+    <h2>ADMIN QUẢN TRỊ</h2>
+    <input type="password" id="adminPass" placeholder="Mật khẩu (123456)">
+    <button class="btn-delete" onclick="clearData()">XÓA HẾT DỮ LIỆU CŨ</button>
+    <div id="message"></div>
+    <p><a href="dashboard.html" style="color:#01579b; text-decoration:none;">← Quay lại Dashboard</a></p>
 </div>
 <script>
     const firebaseConfig = {
@@ -72,16 +35,15 @@
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    function sendData() {
-        const data = {
-            q1: parseInt(document.getElementsByName("q1")[0].value),
-            q2: parseInt(document.getElementsByName("q2")[0].value),
-            q3: parseInt(document.getElementsByName("q3")[0].value),
-            q4: parseInt(document.getElementsByName("q4")[0].value),
-            q5: parseInt(document.getElementsByName("q5")[0].value),
-            timestamp: Date.now()
-        };
-        database.ref('surveys').push(data).then(() => { window.location.href = "dashboard.html"; });
+    function clearData() {
+        if (document.getElementById('adminPass').value === "123456") {
+            if (confirm("Xác nhận xóa vĩnh viễn dữ liệu?")) {
+                database.ref('surveys').remove().then(() => {
+                    document.getElementById('message').innerText = "Đã làm sạch dữ liệu!";
+                    document.getElementById('message').style.color = "green";
+                });
+            }
+        } else { alert("Mật khẩu sai!"); }
     }
 </script>
 </body>
