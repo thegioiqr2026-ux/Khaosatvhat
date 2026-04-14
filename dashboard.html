@@ -22,11 +22,11 @@
 </head>
 <body>
 <div class="card">
-    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP</h2>
+    <h2>DASHBOARD VĂN HÓA AN TOÀN TỔNG HỢP</h2>
     <div id="chart-wrap"><canvas id="radarChart"></canvas></div>
     <div id="evaluation-box">
         <span class="eval-title">⚡ PHÂN TÍCH & ĐỀ XUẤT GIẢI PHÁP</span>
-        <p id="status-text" style="margin:0; font-size:14px; color:#37474f;">Đang tải dữ liệu...</p>
+        <p id="status-text" style="margin:0; font-size:14px; color:#37474f;">Đang tải dữ liệu thực tế...</p>
         <div id="solution-text" class="solution"></div>
     </div>
     <a href="index.html" class="btn-back">QUAY LẠI KHẢO SÁT</a>
@@ -53,14 +53,14 @@
             data: {
                 labels: ['Lãnh đạo', 'Báo cáo', 'Tuân thủ', 'Môi trường', 'Đào tạo'],
                 datasets: [{
-                    label: 'Điểm trung bình (0-10)',
+                    label: 'Điểm trung bình (1-5)',
                     data: dataPoints,
                     backgroundColor: 'rgba(1, 87, 155, 0.2)', borderColor: '#01579b', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#01579b'
                 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                scales: { r: { min: 0, max: 10, ticks: { display: false, stepSize: 2 } } },
+                scales: { r: { min: 0, max: 5, ticks: { display: false, stepSize: 1 } } },
                 plugins: { legend: { display: false } }
             }
         });
@@ -78,7 +78,7 @@
         let minVal = Math.min(...avgs);
         let minIndex = avgs.indexOf(minVal);
         let labels = ['Lãnh đạo', 'Báo cáo', 'Tuân thủ', 'Môi trường', 'Đào tạo'];
-        document.getElementById('status-text').innerText = `Tổng hợp ${count} phiếu. Thấp nhất: ${labels[minIndex]} (${minVal}/10 điểm).`;
+        document.getElementById('status-text').innerText = `Tổng hợp ${count} phiếu. Thấp nhất: ${labels[minIndex]} (${minVal}/5 điểm).`;
         const solutions = [
             "👉 Đề xuất Ban Giám đốc tăng cường Safety Walk hiện trường để lắng nghe anh em vận hành.",
             "👉 Áp dụng chính sách 'Khen thưởng Near-miss' và KHÔNG kỷ luật đối với báo cáo tự nguyện.",
