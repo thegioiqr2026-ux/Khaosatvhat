@@ -3,96 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Quản lý Phiên Khảo sát</title>
+    <title>Admin - Quản lý VHAT</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #cfd8dc; padding: 20px; display: flex; justify-content: center; }
-        .admin-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 500px; }
-        h2 { color: #b71c1c; text-align: center; }
+        body { font-family: sans-serif; background: #cfd8dc; padding: 20px; text-align: center; }
+        .admin-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 450px; margin: auto; }
         .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; text-align: left; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; color: #455a64; }
-        input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 5px; color: white; }
-        .btn-blue { background: #01579b; }
-        .btn-red { background: #b71c1c; }
-        .btn-gray { background: #546e7a; }
-        #log { font-size: 13px; color: #d32f2f; margin-top: 10px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; margin-bottom: 5px; }
+        .btn-blue { background: #01579b; } .btn-red { background: #b71c1c; } .btn-gray { background: #546e7a; }
     </style>
 </head>
 <body>
 <div class="admin-card">
-    <h2>QUẢN TRỊ KHẢO SÁT</h2>
-    
+    <h2>QUẢN TRỊ HỆ THỐNG</h2>
     <div class="section">
-        <label>1. Thiết lập Phiên mới</label>
-        <input type="text" id="factoryName" placeholder="Tên nhà máy (VD: Vĩnh Tân 2)">
-        <button class="btn-blue" onclick="setupNewSession()">TẠO PHIÊN MỚI</button>
+        <label><b>Tạo phiên khảo sát mới:</b></label>
+        <input type="text" id="factoryName" placeholder="Nhập tên nhà máy mới">
+        <button class="btn-blue" onclick="setupNew()">TẠO MỚI (XÓA CŨ)</button>
     </div>
-
     <div class="section">
-        <label>2. Quản lý Dữ liệu hiện tại</label>
-        <p id="currentInfo" style="font-size: 14px; color: #01579b; font-weight: bold;">Đang tải...</p>
-        <button class="btn-gray" onclick="archiveData()">LƯU TRỮ (ARCHIVE)</button>
-        <button class="btn-red" onclick="clearCurrentData()">XÓA TẠM DỮ LIỆU PHIÊN</button>
+        <p id="info" style="font-weight:bold; color:#01579b;">Đang tải...</p>
+        <button class="btn-gray" onclick="archive()">LƯU TRỮ LỊCH SỬ</button>
+        <button class="btn-red" onclick="clearTemp()">XÓA TẠM DỮ LIỆU HIỆN TẠI</button>
     </div>
-
-    <input type="password" id="adminPass" placeholder="Mật khẩu xác nhận (123456)">
-    <div id="log"></div>
-    <p style="text-align: center;"><a href="dashboard.html" style="text-decoration:none; color: #01579b;">← Xem Dashboard</a></p>
+    <input type="password" id="adminPass" placeholder="Mật khẩu (123456)">
 </div>
-
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyALxXDNbFdXkI7XvHqiSNb1jnKjj0CbYnE",
-        authDomain: "qldd-2025.firebaseapp.com",
-        databaseURL: "https://qldd-2025-default-rtdb.firebaseio.com",
-        projectId: "qldd-2025",
-        storageBucket: "qldd-2025.firebasestorage.app",
-        messagingSenderId: "84684010166",
-        appId: "1:84684010166:web:bd9c3b5ae4227ee2812c17",
-        measurementId: "G-7E5BDTCSEZ"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyALxXDNbFdXkI7XvHqiSNb1jnKjj0CbYnE", authDomain: "qldd-2025.firebaseapp.com", databaseURL: "https://qldd-2025-default-rtdb.firebaseio.com", projectId: "qldd-2025", storageBucket: "qldd-2025.firebasestorage.app", messagingSenderId: "84684010166", appId: "1:84684010166:web:bd9c3b5ae4227ee2812c17", measurementId: "G-7E5BDTCSEZ" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Hiển thị tên nhà máy hiện tại
-    db.ref('active_session/name').on('value', snap => {
-        document.getElementById('currentInfo').innerText = "Đang khảo sát: " + (snap.val() || "Chưa thiết lập");
-    });
+    db.ref('active_session/name').on('value', snap => { document.getElementById('info').innerText = "Hiện tại: " + (snap.val()||"N/A"); });
 
-    function checkAuth() {
-        return document.getElementById('adminPass').value === "123456";
-    }
+    function auth() { return document.getElementById('adminPass').value === "123456"; }
 
-    function setupNewSession() {
-        if(!checkAuth()) { alert("Sai mật khẩu"); return; }
+    function setupNew() {
+        if(!auth()) return;
         const name = document.getElementById('factoryName').value;
         if(!name) return;
-        
-        // Tạo phiên mới: Xóa dữ liệu cũ ở surveys và cập nhật tên nhà máy
         db.ref('surveys').remove();
-        db.ref('active_session').set({ name: name, startTime: Date.now() });
-        alert("Đã tạo phiên khảo sát mới cho: " + name);
+        db.ref('active_session').set({ name: name, time: Date.now() });
+        alert("Đã mở phiên mới cho " + name);
     }
 
-    function clearCurrentData() {
-        if(!checkAuth()) { alert("Sai mật khẩu"); return; }
-        if(confirm("Xóa toàn bộ kết quả khảo sát hiện tại?")) {
-            db.ref('surveys').remove();
-            alert("Đã xóa tạm dữ liệu.");
-        }
+    function clearTemp() {
+        if(!auth() || !confirm("Xóa tạm dữ liệu?")) return;
+        db.ref('surveys').remove();
+        alert("Đã làm sạch dữ liệu hiện tại.");
     }
 
-    function archiveData() {
-        if(!checkAuth()) { alert("Sai mật khẩu"); return; }
+    function archive() {
+        if(!auth()) return;
         db.ref('surveys').once('value', snap => {
-            const data = snap.val();
-            if(!data) { alert("Không có dữ liệu để lưu!"); return; }
-            db.ref('active_session/name').once('value', nameSnap => {
-                const name = nameSnap.val();
-                db.ref('archives').push({ factory: name, data: data, time: Date.now() });
-                alert("Đã lưu trữ dữ liệu vào kho lịch sử.");
+            if(!snap.val()) return alert("Không có dữ liệu!");
+            db.ref('active_session/name').once('value', n => {
+                db.ref('archives').push({ factory: n.val(), data: snap.val(), time: Date.now() });
+                alert("Đã lưu vào kho lưu trữ.");
             });
         });
     }
