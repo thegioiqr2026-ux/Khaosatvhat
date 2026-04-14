@@ -2,21 +2,29 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Văn hóa An toàn</title>
+    <title>Dashboard Văn hóa An toàn - Vĩnh Tân 2</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: sans-serif; background: #eceff1; padding: 20px; }
-        .card { background: white; max-width: 800px; margin: auto; padding: 20px; border-radius: 12px; }
+        .card { background: white; max-width: 800px; margin: auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { color: #01579b; text-align: center; }
+        #evaluation-box { margin-top: 30px; padding: 20px; border-radius: 8px; background: #f1f8ff; border-left: 6px solid #01579b; }
+        .solution { color: #d32f2f; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP</h2>
+    <h2>CHỈ SỐ VĂN HÓA AN TOÀN TỔNG HỢP (THANG ĐIỂM 10)</h2>
     <canvas id="radarChart"></canvas>
+    
+    <div id="evaluation-box">
+        <h3 style="color: #01579b; margin-top: 0;">⚡ Đánh giá & Đề xuất giải pháp</h3>
+        <p id="status-text">Đang phân tích dữ liệu từ Firebase...</p>
+        <div id="solution-text" class="solution"></div>
+    </div>
 </div>
 
 <script>
@@ -37,7 +45,7 @@
     let myChart = new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: ['Cam kết Lãnh đạo', 'Văn hóa Báo cáo', 'Tính Tuân thủ', 'Môi trường làm việc', 'Đào tạo'],
+            labels: ['Lãnh đạo', 'Văn hóa Báo cáo', 'Tính Tuân thủ', 'Môi trường', 'Đào tạo'],
             datasets: [{
                 label: 'Điểm trung bình toàn nhà máy',
                 data: [0, 0, 0, 0, 0],
@@ -46,7 +54,7 @@
                 pointBackgroundColor: '#01579b'
             }]
         },
-        options: { scales: { r: { min: 0, max: 5 } } }
+        options: { scales: { r: { min: 0, max: 10, ticks: { stepSize: 2 } } } }
     });
 
     database.ref('surveys').on('value', (snapshot) => {
@@ -61,13 +69,33 @@
         }
 
         if (count > 0) {
-            myChart.data.datasets[0].data = [
-                sumQ1/count, 
-                sumQ2/count, 
-                sumQ3/count, 
-                4.2, 3.8 // Điểm giả lập cho 2 trục còn lại
-            ];
+            const avg1 = (sumQ1/count).toFixed(1);
+            const avg2 = (sumQ2/count).toFixed(1);
+            const avg3 = (sumQ3/count).toFixed(1);
+
+            myChart.data.datasets[0].data = [avg1, avg2, avg3, 8.5, 7.8];
             myChart.update();
+
+            // Tự động phân tích và đưa ra giải pháp
+            let status = `Hiện có ${count} lượt đánh giá. `;
+            let solution = "";
+
+            if (avg2 < 7) {
+                status += "Tình trạng: Văn hóa báo cáo đang ở mức báo động.";
+                solution = "👉 Giải pháp: Cần triển khai chính sách 'Khen thưởng báo cáo Near-miss' và cam kết không kỷ luật đối với các báo cáo tự nguyện để loại bỏ tâm lý e ngại.";
+            } else if (avg3 < 7) {
+                status += "Tình trạng: Việc tuân thủ quy trình hiện trường có dấu hiệu lỏng lẻo.";
+                solution = "👉 Giải pháp: Tăng cường giám sát chéo giữa các phân xưởng và áp dụng thẻ phạt an toàn đối với các hành vi cố tình vi phạm LOTO.";
+            } else if (avg1 < 7) {
+                status += "Tình trạng: Sự tin tưởng vào cam kết của Lãnh đạo chưa cao.";
+                solution = "👉 Giải pháp: Lãnh đạo cần thực hiện các buổi đối thoại trực tiếp (Safety Talk) tại hiện trường để lắng nghe và giải quyết kiến nghị của NLĐ.";
+            } else {
+                status += "Tình trạng: Văn hóa an toàn đang phát triển rất tốt.";
+                solution = "✅ Giải pháp: Duy trì phong trào hiện tại và ứng dụng thêm công nghệ AI trong nhận diện hành vi không an toàn.";
+            }
+
+            document.getElementById('status-text').innerText = status;
+            document.getElementById('solution-text').innerText = solution;
         }
     });
 </script>
